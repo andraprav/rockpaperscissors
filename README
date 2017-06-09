@@ -1,0 +1,6 @@
+To start me, run main
+The bot begins learning after 10 turns, so play more if you feel it is a weak opponent
+
+TODO
+tests
+the bot now knows that rock beats scissors and so on. it will be interesting to learn those things from experience (nn)
