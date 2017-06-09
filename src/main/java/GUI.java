@@ -1,3 +1,5 @@
+package main.java;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -5,9 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-/**
- * Created by Andra on 5/28/2017.
- */
 public class GUI extends JFrame implements ActionListener {
 
     int scorePlayer = 0;
@@ -23,18 +22,19 @@ public class GUI extends JFrame implements ActionListener {
         computer = new Computer();
         setLayout(new BorderLayout());
         setSize(500, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel choicePanel = new JPanel();
         add(choicePanel, BorderLayout.NORTH);
-        for (String option : Main.options) {
+        for (Character option : Main.options) {
             addButton(option, choicePanel);
         }
 
         JPanel resultPanel = new JPanel();
         add(resultPanel, BorderLayout.SOUTH);
-        playerChoice.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        computerChoice.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         resultPanel.add(playerChoice);
+        resultPanel.add(new JLabel("-"));
         resultPanel.add(computerChoice);
 
         setVisible(true);
@@ -45,54 +45,56 @@ public class GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             String move = e.getActionCommand();
-            displayChoice(move);
-            computer.enhanceMemory(move);
+            displayChoices(move.charAt(0));
+            computer.enhanceMemory(move.charAt(0));
         } catch (IOException io) {
 
         }
     }
 
-    void addButton(String option, JPanel panel) throws IOException {
-        Image img = ImageIO.read(Main.class.getResource(option + EXTENSION));
-        ImageIcon imageIcon = new ImageIcon(img);
+    void addButton(Character option, JPanel panel) throws IOException {
+
 
         JButton button = new JButton();
-        button.setIcon(imageIcon);
+        button.setIcon(getImage(option));
         button.setPreferredSize(new Dimension(100, 100));
-        button.setActionCommand(option);
+        button.setActionCommand(option + "");
         panel.add(button);
         button.addActionListener(this);
     }
 
-    void displayChoice(String option) throws IOException {
-        Image img = ImageIO.read(Main.class.getResource(option + EXTENSION));
-        playerChoice.setIcon(new ImageIcon(img));
+    void displayChoices(Character playerMove) throws IOException {
+        playerChoice.setIcon(getImage(playerMove));
 
 
-        String nextMove = computer.getNextMove();
-        img = ImageIO.read(Main.class.getResource(nextMove + EXTENSION));
-        computerChoice.setIcon(new ImageIcon(img));
+        Character computerMove = computer.getNextMove();
+        computerChoice.setIcon(getImage(computerMove));
 
-        updateScore(option, nextMove);
+        updateScore(playerMove, computerMove);
         playerChoice.setText("You " + scorePlayer);
         computerChoice.setText(scoreComputer + " Computer ");
         setVisible(true);
     }
 
-    void updateScore(String playerChoice, String computerChoice) {
+    void updateScore(Character playerChoice, Character computerChoice) {
         int playerIndex = Main.options.indexOf(playerChoice);
         int computerIndex = Main.options.indexOf(computerChoice);
         turns++;
         if (computerIndex == playerIndex) {
+            this.computer.hisWinnings.add(true);
             return;
         }
 
         if (playerIndex - computerIndex == 2 || computerIndex - playerIndex == 1) {
             scoreComputer++;
-            this.computer.playerWon = false;
+            this.computer.hisWinnings.add(false);
         } else {
             scorePlayer++;
-            this.computer.playerWon = true;
+            this.computer.hisWinnings.add(true);
         }
+    }
+
+    private ImageIcon getImage(Character move) throws IOException {
+        return new ImageIcon(ImageIO.read(Main.class.getResource("../resources/" + move + EXTENSION)));
     }
 }
