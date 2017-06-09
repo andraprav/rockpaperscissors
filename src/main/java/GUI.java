@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class GUI extends JFrame implements ActionListener {
 
@@ -17,7 +18,7 @@ public class GUI extends JFrame implements ActionListener {
     Computer computer;
     int turns = 0;
 
-    public GUI() throws IOException {
+    public GUI() {
         super("Rock Paper Scissors");
         computer = new Computer();
         setLayout(new BorderLayout());
@@ -43,16 +44,13 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        try {
-            String move = e.getActionCommand();
-            displayChoices(move.charAt(0));
-            computer.enhanceMemory(move.charAt(0));
-        } catch (IOException io) {
 
-        }
+        String move = e.getActionCommand();
+        displayChoices(move.charAt(0));
+        computer.enhanceMemory(move.charAt(0));
     }
 
-    void addButton(Character option, JPanel panel) throws IOException {
+    void addButton(Character option, JPanel panel) {
 
 
         JButton button = new JButton();
@@ -63,7 +61,7 @@ public class GUI extends JFrame implements ActionListener {
         button.addActionListener(this);
     }
 
-    void displayChoices(Character playerMove) throws IOException {
+    void displayChoices(Character playerMove) {
         playerChoice.setIcon(getImage(playerMove));
 
 
@@ -94,7 +92,15 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
-    private ImageIcon getImage(Character move) throws IOException {
-        return new ImageIcon(ImageIO.read(Main.class.getResource("../resources/" + move + EXTENSION)));
+    private ImageIcon getImage(Character move) {
+        ImageIcon img = null;
+        try {
+            img = new ImageIcon(ImageIO.read(Main.class.getResource("../resources/" + move + EXTENSION)));
+        } catch (IllegalArgumentException io) {
+            System.out.println("no image or smth");
+        } catch (IOException io) {
+            System.out.println(Arrays.toString(io.getStackTrace()));
+        }
+        return img;
     }
 }
